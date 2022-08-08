@@ -1,0 +1,74 @@
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match_all": {} }
+      ],
+      "should": [
+        {
+          "query_string": {
+            "default_field": "description",
+            "query": "javascript OR python OR pytorch OR deep learning"
+          }
+        },
+        {
+          "function_score": {
+            "query": {
+              "query_string": {
+                "default_field": "description",
+                "query": " -\"c#\" -\"c++\" -\"java \" -Senior -\"Sr.\" "
+              }
+            },
+            "boost": 3
+          }
+        },
+        {
+          "function_score": {
+            "query": {
+              "range": {
+                "company_staff_count": {
+                  "gte": 5000
+                }
+              }
+            },
+            "boost": 4
+          }
+        },
+        {
+          "function_score": {
+            "query": {
+              "range": {
+                "listed_at:": {
+                  "gte": "now-2w"
+                }
+              }
+            },
+            "boost": 2
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "terms": {
+            "description": ["phd", "ph.d"]
+          }
+        },
+        {
+          "terms": {
+            "description": ["die", "das", "der", "und", "sein"]
+          }
+        },
+        {
+          "terms": {
+            "description": ["pour", "avoir", "dans", "faire", "volonté", "aussi"]
+          }
+        },
+        {
+          "terms": {
+            "description": ["fare", "anche", "qualsiasi", "dove", "buono", "essere"]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,32 @@
+version: "3.9"
+services:
+    elastic:
+        image: elasticsearch:8.3.3
+        container_name: es01
+        environment:
+            - discovery.type=single-node
+            - xpack.security.enabled=false
+        volumes:
+            - ./elastic_data:/usr/share/elasticsearch/data
+        ports:
+            - "9200:9200"
+            - "9300:9300"
+        networks:
+            - elastic
+
+    kibana:
+        image: kibana:8.3.3
+        container_name: kib01
+        environment:
+            - xpack.security.enabled=false
+        ports:
+            - "5601:5601"
+        depends_on:
+            - elasticsearch
+        networks:
+            - elastic
+
+networks:
+    elastic:
+        name: elastic
+        driver: bridge
