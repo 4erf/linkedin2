@@ -35,10 +35,10 @@ jobs = apis[1].get_all_jobs(
         search, job_type='F', location_name='Switzerland', workplaceType=('1', '3'),
 )
 
-with open('jobs_src.json', 'w') as file:
+with open(dir_ + '/jobs_src.json', 'w') as file:
     json.dump(jobs, file)
 
-with open('jobs_src.json') as file:
+with open(dir_ + '/jobs_src.json') as file:
     jobs = json.load(file)
 
 

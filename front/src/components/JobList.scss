@@ -1,0 +1,12 @@
+@use 'src/styles' as *;
+
+.JobList {
+  display: flex;
+  flex-direction: column;
+
+  .scroll {
+    flex: 1;
+    height: 100%;
+    overflow-y: auto;
+  }
+}

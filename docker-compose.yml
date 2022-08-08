@@ -6,6 +6,13 @@ services:
         environment:
             - discovery.type=single-node
             - xpack.security.enabled=false
+            - xpack.security.enrollment.enabled=false
+            - ingest.geoip.downloader.enabled=false
+            - "http.cors.enabled=true"
+            - "http.cors.allow-origin=\"*\""
+            - "http.cors.allow-methods=OPTIONS, HEAD, GET, POST, PUT, DELETE"
+            - "http.cors.allow-headers=X-Requested-With,X-Auth-Token,Content-Type,Content-Length"
+            - "http.cors.allow-credentials=true"
         volumes:
             - ./elastic_data:/usr/share/elasticsearch/data
         ports:

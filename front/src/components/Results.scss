@@ -1,0 +1,16 @@
+@use 'src/styles' as *;
+
+$top-bar-height: 136px;
+
+.Results {
+  display: flex;
+  height: calc(100vh - #{$top-bar-height});
+
+  & > *:first-child {
+    flex: 3 0;
+  }
+
+  & > *:last-child {
+    flex: 4 0;
+  }
+}
