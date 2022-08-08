@@ -83,7 +83,7 @@ def map_job(item):
     return {
         'id': job_id,
         'location': job['formattedLocation'],
-        'listed_at:': job['listedAt'],
+        'listed_at': job['listedAt'],
         'title': job['title'],
         'remote_allowed': job['workRemoteAllowed'],
         'description': full_job['description']['text'],

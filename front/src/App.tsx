@@ -9,7 +9,7 @@ import { Api } from './services/Api';
 
 const darkTheme = createTheme({
   palette: {
-    mode: 'light',
+    mode: new Date().getHours() > 7 && new Date().getHours() < 21 ? 'light' : 'dark',
   },
 });
 
