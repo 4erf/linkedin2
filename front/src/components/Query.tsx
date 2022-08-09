@@ -8,21 +8,27 @@ const initialSearch = `
 AND NOT (c# OR c++ OR java OR senior OR sr. OR php)
 `.replaceAll('\n', ' ').trim()
 
+const lsKey = 'linkedin^2_query';
+
 interface Props {
   onQueryChange: (query: QueryParamsFull) => void;
 }
 
 function Query (props: Props) {
-  const [search, setSearch] = useState<string>(initialSearch);
-  const [staffValue, setStaffValue] = useState<number>(5000);
-  const [staffWeight, setStaffWeight] = useState<number>(5);
-  const [daysValue, setDaysValue] = useState<number>(15);
-  const [daysWeight, setDaysWeight] = useState<number>(2);
-  const [showSeen, setShowSeen] = useState<boolean>(false);
-  const [showApplied, setShowApplied] = useState<boolean>(false);
+  const query: QueryParamsFull | null = JSON.parse(localStorage.getItem(lsKey) || 'null')
+
+  const [search, setSearch] = useState<string>(query?.search || '');
+  const [staffValue, setStaffValue] = useState<number>(query?.staffValue || 0);
+  const [staffWeight, setStaffWeight] = useState<number>(query?.staffWeight || 1);
+  const [daysValue, setDaysValue] = useState<number>(query?.daysValue || 0);
+  const [daysWeight, setDaysWeight] = useState<number>(query?.daysWeight || 1);
+  const [showSeen, setShowSeen] = useState<boolean>(query?.showSeen || false);
+  const [showApplied, setShowApplied] = useState<boolean>(query?.showApplied || false);
 
   function submit() {
-    props.onQueryChange({ search, staffValue, staffWeight, daysValue, daysWeight, showSeen, showApplied })
+    const query = { search, staffValue, staffWeight, daysValue, daysWeight, showSeen, showApplied };
+    props.onQueryChange(query)
+    localStorage.setItem(lsKey, JSON.stringify(query))
   }
 
   useEffect(() => {

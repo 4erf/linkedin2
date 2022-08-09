@@ -1,5 +1,5 @@
 import './App.scss';
-import { Container, createTheme, CssBaseline, ThemeProvider } from '@mui/material';
+import { Alert, Container, createTheme, CssBaseline, Snackbar, ThemeProvider } from '@mui/material';
 import React, { useState } from 'react';
 import Results from './components/Results';
 import Query from './components/Query';
@@ -15,9 +15,14 @@ const darkTheme = createTheme({
 
 function App() {
   const [results, setResults] = useState<ResultItem[]>([])
+  const [error, setError] = useState<boolean>(false);
 
   async function fetchResults (query: QueryParamsFull): Promise<void> {
-    setResults(await Api.fetchFilteredResults(query))
+    try {
+      setResults(await Api.fetchFilteredResults(query))
+    } catch (e) {
+      setError(true);
+    }
   }
 
   return (
@@ -29,6 +34,16 @@ function App() {
           <Results results={results} />
         </Container>
       </main>
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom' , horizontal: 'center' }}
+        open={error}
+        autoHideDuration={10000}
+        onClose={(e, reason) => reason !== "clickaway" && setError(false)}
+      >
+        <Alert onClose={() => setError(false)} severity="error">
+          There was a problem while fetching results, please check your query string!
+        </Alert>
+      </Snackbar>
     </ThemeProvider>
   );
 }
