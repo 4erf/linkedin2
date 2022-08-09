@@ -70,9 +70,10 @@ function JobDetail(props: Props) {
                 {applied ? 'Applied': 'Apply'}
               </Button>
             </Stack>
-            <Typography py={2} variant='body1' style={{whiteSpace: "pre-wrap"}}>
-              {job.description}
-            </Typography>
+            <Typography
+              py={2} variant='body1'
+              dangerouslySetInnerHTML={{__html: job.description}}
+            />
           </Stack> : 'No job selected...'}
         </CardContent>
       </Card>
