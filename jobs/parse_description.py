@@ -7,6 +7,7 @@ type_map = {
     'list': ('<ul>', '</ul>'),
     'olist': ('<ol>', '</ol>'),
     'paragraph': ('<p>', '</p>'),
+    'hyperlink': (lambda x: f'<a href="{x}">', '</a>'),
 }
 
 
@@ -22,6 +23,9 @@ def parse_description(attrs, text):
             type_ = 'olist'
         if type_ == 'list':
             d[start] = [type_map[type_][0]] + d.get(start, [])
+        elif type_ == 'hyperlink':
+            url = attr['attributeKindUnion']['hyperlink']['url']
+            d[start] = [type_map[type_][0](url)] + d.get(start, [])
         else:
             d[start] = d.get(start, []) + [type_map[type_][0]]
         if length != 1:
