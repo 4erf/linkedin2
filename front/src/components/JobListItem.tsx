@@ -16,10 +16,10 @@ function JobListItem(props: Props) {
 
   const [seen, setSeen] = useState(item.seen);
 
-  function setState(e: React.ChangeEvent<HTMLInputElement>) {
-    const seen = e.target.checked
-    Api.markJobAsSeen(item.id, seen)
-    setSeen(seen)
+  function setSeenState(e: React.ChangeEvent<HTMLInputElement>) {
+    const newSeen = e.target.checked
+    Api.markJobAsSeen(item.id, newSeen)
+    setSeen(newSeen)
   }
 
   return (
@@ -27,7 +27,7 @@ function JobListItem(props: Props) {
       disablePadding
       alignItems="flex-start"
       secondaryAction={
-        <Checkbox edge="end" checked={seen} onChange={setState} />
+        <Checkbox edge="end" checked={seen} onChange={setSeenState} />
       }
     >
       <ListItemButton onClick={props.onItemSelect} selected={props.selected}>

@@ -2,7 +2,9 @@ import './JobDetail.scss'
 import { JobItem } from '../types/JobItem';
 import { Button, Card, CardContent, Icon, Stack, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Api } from '../services/Api';
+import app from '../App';
 
 interface Props {
   job: JobItem | null;
@@ -22,7 +24,15 @@ function JobDetail(props: Props) {
   const { job } = props;
   const classes = useStyles();
 
+  const [applied, setApplied] = useState(!!job?.applied);
+
+  function setAppliedState() {
+    Api.markJobAsApplied(job!.id, !applied)
+    setApplied(!applied)
+  }
+
   useEffect(() => {
+    setApplied(!!job?.applied)
     document.getElementsByClassName('JobDetail')[0].scrollTo({ top: 0 })
   }, [job])
 
@@ -52,9 +62,14 @@ function JobDetail(props: Props) {
                 {job.company_description}
               </Typography>
             </Stack>
-            <Button variant="contained" href={job.apply_link} target='_blank'>
-              Apply
-            </Button>
+            <Stack direction='row' spacing={2}>
+              <Button variant="contained" href={job.apply_link} target='_blank' color='secondary'>
+                Visit
+              </Button>
+              <Button variant="contained" onClick={setAppliedState} color={applied ? 'success' : 'primary'}>
+                {applied ? 'Applied': 'Apply'}
+              </Button>
+            </Stack>
             <Typography py={2} variant='body1' style={{whiteSpace: "pre-wrap"}}>
               {job.description}
             </Typography>

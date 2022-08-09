@@ -19,9 +19,10 @@ function Query (props: Props) {
   const [daysValue, setDaysValue] = useState<number>(15);
   const [daysWeight, setDaysWeight] = useState<number>(2);
   const [showSeen, setShowSeen] = useState<boolean>(false);
+  const [showApplied, setShowApplied] = useState<boolean>(false);
 
   function submit() {
-    props.onQueryChange({ search, staffValue, staffWeight, daysValue, daysWeight, showSeen })
+    props.onQueryChange({ search, staffValue, staffWeight, daysValue, daysWeight, showSeen, showApplied })
   }
 
   useEffect(() => {
@@ -103,6 +104,17 @@ function Query (props: Props) {
                   onChange={event => setShowSeen(event.target.checked)}
                 />}
                 label="Seen"
+              />
+            </FormGroup>
+          </Grid>
+          <Grid item xs={1}>
+            <FormGroup>
+              <FormControlLabel
+                control={<Checkbox
+                  checked={showApplied}
+                  onChange={event => setShowApplied(event.target.checked)}
+                />}
+                label="Applied"
               />
             </FormGroup>
           </Grid>

@@ -6,11 +6,12 @@ import { JobItem } from '../types/JobItem';
 import { StateItem } from '../types/StateItem';
 
 export class Api {
-  private static base = `http://localhost:9200`;
+  private static readonly base = `http://localhost:9200`;
+  private static readonly headers = { 'Accept': 'application/json', 'Content-Type': 'application/json' };
   private static states: { [id: string]: StateItem };
 
   public static async fetchFilteredResults(query: QueryParamsFull): Promise<ResultItem[]> {
-    const { showSeen, ...apiQuery } = query;
+    const { showSeen, showApplied, ...apiQuery } = query;
     const apiResults = await this.fetchResults(apiQuery);
     this.states = await this.fetchStates();
 
@@ -21,24 +22,23 @@ export class Api {
     }))
 
     return results.filter(result => {
-      if (showSeen) {
-        return result.seen
-      } else {
-        return !result.seen && !result.applied
-      }
-    });
+      if (showSeen && showApplied) { return result.seen && result.applied }
+      if (showSeen) { return result.seen }
+      if (showApplied) { return result.applied }
+      return !result.seen && !result.applied
+    })
   }
 
   public static async fetchStates(): Promise<{ [id: string]: StateItem }> {
-    const res = await fetch(`${this.base}/state/_search?size=10000`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    })
+    const res = await fetch(`${this.base}/state/_search?size=10000`, { method: 'GET', headers: this.headers })
     const data: ApiManyResponse<StateItem> = await res.json();
     return Object.fromEntries(data.hits.hits.map(hit => [hit._id, hit._source]));
+  }
+
+  public static async fetchState(id: string): Promise<StateItem | null> {
+    const res = await fetch(`${this.base}/state/_doc/${id}`, { method: 'GET', headers: this.headers })
+    const data: ApiSingleResponse<StateItem> = await res.json();
+    return data._source || null;
   }
 
   public static async fetchResults(query: QueryParams): Promise<ResultItemApi[]> {
@@ -48,10 +48,7 @@ export class Api {
     ]
     const res = await fetch(`${this.base}/jobs/_search`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+      headers: this.headers,
       body: JSON.stringify(JobQuery(query, fields))
     })
     const data: ApiManyResponse<ResultItemApi> = await res.json();
@@ -59,25 +56,21 @@ export class Api {
   }
 
   public static async fetchJob(id: string): Promise<JobItem> {
-    const res = await fetch(`${this.base}/jobs/_doc/${id}`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-    })
+    const res = await fetch(`${this.base}/jobs/_doc/${id}`, { method: 'GET', headers: this.headers })
     const data: ApiSingleResponse<JobItem> = await res.json();
-    return data._source;
+    const state = await this.fetchState(id);
+    return {
+      ...data._source,
+      seen: !!state?.seen,
+      applied: !!state?.applied,
+    };
   }
 
   public static async createState(id: string): Promise<void> {
     this.states[id] = { seen: false, applied: false };
     await fetch(`${this.base}/state/_create/${id}`, {
       method: 'PUT',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+      headers: this.headers,
       body: JSON.stringify(this.states[id])
     })
   }
@@ -86,10 +79,7 @@ export class Api {
     if (!this.states[id]) { await this.createState(id) }
     await fetch(`${this.base}/state/_update/${id}`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+      headers: this.headers,
       body: JSON.stringify({ doc: { seen } })
     })
   }
@@ -98,10 +88,7 @@ export class Api {
     if (!this.states[id]) { await this.createState(id) }
     await fetch(`${this.base}/state/_update/${id}`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+      headers: this.headers,
       body: JSON.stringify({ doc: { applied } })
     })
   }

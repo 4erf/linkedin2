@@ -31,7 +31,7 @@ export const JobQuery = (query: QueryParams, fields: string[]) => ({
           "function_score": {
             "query": {
               "range": {
-                "listed_at:": {
+                "listed_at": {
                   "gte": `now-${query.daysValue}d`
                 }
               }
