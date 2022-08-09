@@ -1,11 +1,13 @@
-#LinkedIn<sup>2</sup>
+# LinkedIn<sup>2</sup>
 
 <b>Search smarter not harder.</b>
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./images/dark.png">
-  <img alt="LinkedIn^2" src="./images/light.png">
-</picture>
+<p align="center">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="./images/dark.jpg">
+      <img alt="LinkedIn^2" src="./images/light.jpg" width="500">
+    </picture>
+</p>
 
 LinkedIn<sup>2</sup> is a utility to rank jobs according to desired keywords or features, for example:
 

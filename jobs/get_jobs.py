@@ -90,7 +90,7 @@ def map_job(item):
         'description': parse_description(full_job['description']['attributes'], full_job['description']['text']),
         'apply_link': apply_link,
         'company_name': company['name'],
-        'company_description': company['description'].split('.')[0],
+        'company_description': company.get('description', '').split('.')[0],
         'company_staff_count': company['staffCount'],
         'company_category': company['companyIndustries'][0]['localizedName'],
         'company_hq_country': company.get('headquarter', {}).get('country'),
