@@ -2,6 +2,11 @@
 
 <b>Search smarter not harder.</b>
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./images/dark.png">
+  <img alt="LinkedIn^2" src="./images/light.png">
+</picture>
+
 LinkedIn<sup>2</sup> is a utility to rank jobs according to desired keywords or features, for example:
 
 ``(python OR pytorch OR "deep learning") AND NOT (c# OR c++)``
