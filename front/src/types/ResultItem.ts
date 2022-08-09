@@ -1,4 +1,9 @@
-export interface ResultItem {
+export interface ResultItem extends ResultItemApi {
+  seen: boolean;
+  applied: boolean;
+}
+
+export interface ResultItemApi {
   id: string;
   location: string;
   listed_at: number;

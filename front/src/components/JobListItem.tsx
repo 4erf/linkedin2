@@ -1,6 +1,6 @@
 import './JobListItem.scss'
 import { Avatar, Checkbox, ListItem, ListItemAvatar, ListItemButton, ListItemText, Stack, Typography } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 import { ResultItem } from '../types/ResultItem';
 import Moment from 'react-moment';
 import { Api } from '../services/Api';
@@ -14,8 +14,12 @@ interface Props {
 function JobListItem(props: Props) {
   const { item } = props;
 
+  const [seen, setSeen] = useState(item.seen);
+
   function setState(e: React.ChangeEvent<HTMLInputElement>) {
-    Api.markJobAsSeen(item.id, e.target.checked)
+    const seen = e.target.checked
+    Api.markJobAsSeen(item.id, seen)
+    setSeen(seen)
   }
 
   return (
@@ -23,7 +27,7 @@ function JobListItem(props: Props) {
       disablePadding
       alignItems="flex-start"
       secondaryAction={
-        <Checkbox edge="end" onChange={setState} />
+        <Checkbox edge="end" checked={seen} onChange={setState} />
       }
     >
       <ListItemButton onClick={props.onItemSelect} selected={props.selected}>

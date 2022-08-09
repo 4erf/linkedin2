@@ -12,9 +12,11 @@ interface Props {
 }
 
 function JobList(props: Props) {
+  const { results } = props;
+
   const [page, setPage] = useState(1);
 
-  const len = props.results.length;
+  const len = results.length;
   const itemsPerPage = 25;
   const [start, end] = [(page - 1) * itemsPerPage, page * itemsPerPage];
 
@@ -22,18 +24,22 @@ function JobList(props: Props) {
     document.getElementsByClassName('scroll')[0].scrollTo({ top: 0 });
   }, [page])
 
+  useEffect(() => {
+    setPage(1);
+  }, [results])
+
   return (
     <div className='JobList'>
       <Card elevation={0} sx={{ backgroundColor: 'primary.main', borderRadius: 0 }}>
         <CardContent>
           <Typography variant="body2" color='primary.contrastText'>
-            {props.results.length} results
+            {results.length} results
           </Typography>
         </CardContent>
       </Card>
       <div className="scroll">
         <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-          {props.results.slice(start, end).map((item, i) => (
+          {results.slice(start, end).map((item, i) => (
             <React.Fragment key={item.id}>
               <JobListItem
                 item={item}

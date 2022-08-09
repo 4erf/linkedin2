@@ -1,4 +1,4 @@
-import { ResultItem } from '../types/ResultItem';
+import { ResultItem, ResultItemApi } from '../types/ResultItem';
 import { QueryParams, QueryParamsFull } from '../types/QueryParams';
 import { ApiManyResponse, ApiSingleResponse } from '../types/ApiResponse';
 import { JobQuery } from '../consts/JobQuery';
@@ -11,33 +11,38 @@ export class Api {
 
   public static async fetchFilteredResults(query: QueryParamsFull): Promise<ResultItem[]> {
     const { showSeen, ...apiQuery } = query;
-    const results = await this.fetchResults(apiQuery);
+    const apiResults = await this.fetchResults(apiQuery);
     this.states = await this.fetchStates();
 
+    const results = apiResults.map(result => ({
+      ...result,
+      seen: !!this.states[result.id]?.seen,
+      applied: !!this.states[result.id]?.applied,
+    }))
+
     return results.filter(result => {
-      const state = this.states[result.id];
       if (showSeen) {
-        return state && state.seen
+        return result.seen
       } else {
-        return !state || (!state.seen && !state.applied)
+        return !result.seen && !result.applied
       }
     });
   }
 
   public static async fetchStates(): Promise<{ [id: string]: StateItem }> {
-    const res = await fetch(`${this.base}/state/_search`, {
+    const res = await fetch(`${this.base}/state/_search?size=10000`, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
-      },
+      }
     })
     const data: ApiManyResponse<StateItem> = await res.json();
     return Object.fromEntries(data.hits.hits.map(hit => [hit._id, hit._source]));
   }
 
-  public static async fetchResults(query: QueryParams): Promise<ResultItem[]> {
-    const fields: Array<keyof ResultItem> = [
+  public static async fetchResults(query: QueryParams): Promise<ResultItemApi[]> {
+    const fields: Array<keyof ResultItemApi> = [
       'id', 'location', 'listed_at', 'title', 'company_name',
       'company_logo', 'company_staff_count', 'remote_allowed'
     ]
@@ -49,7 +54,7 @@ export class Api {
       },
       body: JSON.stringify(JobQuery(query, fields))
     })
-    const data: ApiManyResponse<ResultItem> = await res.json();
+    const data: ApiManyResponse<ResultItemApi> = await res.json();
     return data.hits.hits.map(hit => hit._source);
   }
 
