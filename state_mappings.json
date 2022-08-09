@@ -1,0 +1,12 @@
+{
+  "mappings": {
+    "properties": {
+      "applied": {
+        "type": "boolean"
+      },
+      "seen": {
+        "type": "boolean"
+      }
+    }
+  }
+}
