@@ -50,7 +50,7 @@ export class Api {
       body: JSON.stringify(JobQuery(query, fields))
     })
     const data: ApiManyResponse<ResultItem> = await res.json();
-    return data.hits.hits.map(hit => ({ ...hit._source, id: hit._id }));
+    return data.hits.hits.map(hit => hit._source);
   }
 
   public static async fetchJob(id: string): Promise<JobItem> {
@@ -62,7 +62,7 @@ export class Api {
       },
     })
     const data: ApiSingleResponse<JobItem> = await res.json();
-    return { ...data._source, id: data._id };
+    return data._source;
   }
 
   public static async createState(id: string): Promise<void> {

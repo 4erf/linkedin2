@@ -1,0 +1,16 @@
+[
+  {
+    "date": {
+      "field": "listed_at",
+      "formats": [
+        "UNIX_MS"
+      ]
+    }
+  },
+  {
+    "set": {
+      "field": "_id",
+      "value": "{{id}}"
+    }
+  }
+]
