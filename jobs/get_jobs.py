@@ -9,6 +9,7 @@ dir_ = os.path.abspath(os.path.dirname(__file__))
 
 sys.path.append(dir_ + '/api')  # TODO: remove
 from linkedin_api import Linkedin
+from parse_description import parse_description
 
 pool_size = 20
 max_tries = 10
@@ -86,7 +87,7 @@ def map_job(item):
         'listed_at': job['listedAt'],
         'title': job['title'],
         'remote_allowed': job['workRemoteAllowed'],
-        'description': full_job['description']['text'],
+        'description': parse_description(full_job['description']['attributes'], full_job['description']['text']),
         'apply_link': apply_link,
         'company_name': company['name'],
         'company_description': company['description'].split('.')[0],
