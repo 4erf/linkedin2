@@ -6,6 +6,7 @@ import Query from './components/Query';
 import { ResultItem } from './types/ResultItem';
 import { QueryParamsFull } from './types/QueryParams';
 import { Api } from './services/Api';
+import { Token } from './types/Token';
 
 const darkTheme = createTheme({
   palette: {
@@ -15,11 +16,13 @@ const darkTheme = createTheme({
 
 function App() {
   const [results, setResults] = useState<ResultItem[]>([])
+  const [tokens, setTokens] = useState<Token[]>([])
   const [error, setError] = useState<boolean>(false);
 
   async function fetchResults (query: QueryParamsFull): Promise<void> {
     try {
       setResults(await Api.fetchFilteredResults(query))
+      setTokens(await Api.fetchTokens(query.search))
     } catch (e) {
       setError(true);
     }
@@ -31,7 +34,7 @@ function App() {
       <main className="App">
         <Container maxWidth="lg">
           <Query onQueryChange={fetchResults} />
-          <Results results={results} />
+          <Results results={results} tokens={tokens} />
         </Container>
       </main>
       <Snackbar

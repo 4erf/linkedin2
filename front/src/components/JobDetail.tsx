@@ -1,30 +1,20 @@
 import './JobDetail.scss'
 import { JobItem } from '../types/JobItem';
 import { Button, Card, CardContent, Icon, Stack, Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import React, { useEffect, useState } from 'react';
 import { Api } from '../services/Api';
-import app from '../App';
+import { Token } from '../types/Token';
 
 interface Props {
   job: JobItem | null;
+  tokens: Token[];
 }
 
-const useStyles = makeStyles({
-  multiLineEllipsis: {
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    display: "-webkit-box",
-    "-webkit-line-clamp": 3,
-    "-webkit-box-orient": "vertical"
-  }
-});
-
 function JobDetail(props: Props) {
-  const { job } = props;
-  const classes = useStyles();
+  const { job, tokens } = props;
 
   const [applied, setApplied] = useState(!!job?.applied);
+  const [description, setDescription] = useState(job?.description);
 
   function setAppliedState() {
     Api.markJobAsApplied(job!.id, !applied)
@@ -35,6 +25,20 @@ function JobDetail(props: Props) {
     setApplied(!!job?.applied)
     document.getElementsByClassName('JobDetail')[0].scrollTo({ top: 0 })
   }, [job])
+
+  useEffect(() => {
+    let desc = job?.description;
+    if (!desc) { return; }
+    for (let { token } of tokens) {
+      let index: number = desc.toLowerCase().indexOf(token.toLowerCase());
+      while (index !== -1) {
+        desc = desc.slice(0, index + token.length) + '</mark>' + desc.slice(index + token.length);
+        desc = desc.slice(0, index) + '<mark>' + desc.slice(index);
+        index = desc.toLowerCase().indexOf(token.toLowerCase(), index + '<mark>'.length + 1);
+      }
+    }
+    setDescription(desc);
+  }, [job, tokens])
 
   return (
     <div className="JobDetail">
@@ -57,9 +61,24 @@ function JobDetail(props: Props) {
               </Typography>
             </Stack>
             <Stack direction='row' pb={1}>
-              <Icon color='disabled'>description</Icon>
-              <Typography pl={2} variant='body2' className={classes.multiLineEllipsis} color='text.secondary'>
-                {job.company_description}
+              <Icon>link</Icon>
+              <Typography
+                pl={2}
+                variant='body2'
+                component='a'
+                href={`https://www.google.com/search?q=${job.company_name}`}
+                target="_blank"
+              >
+                {job.company_name}
+              </Typography>
+              <Typography mx={1}>&#183;</Typography>
+              <Typography
+                variant='body2'
+                component='a'
+                href={`https://www.google.com/search?q=${job.company_name}%20revenue`}
+                target="_blank"
+              >
+                Revenue
               </Typography>
             </Stack>
             <Stack direction='row' spacing={2}>
@@ -72,7 +91,7 @@ function JobDetail(props: Props) {
             </Stack>
             <Typography
               py={2} variant='body1'
-              dangerouslySetInnerHTML={{__html: job.description}}
+              dangerouslySetInnerHTML={{__html: description || ''}}
             />
           </Stack> : 'No job selected...'}
         </CardContent>

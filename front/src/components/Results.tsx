@@ -5,9 +5,11 @@ import { ResultItem } from '../types/ResultItem';
 import { JobItem } from '../types/JobItem';
 import { useState } from 'react';
 import { Api } from '../services/Api';
+import { Token } from '../types/Token';
 
 interface Props {
   results: ResultItem[];
+  tokens: Token[];
 }
 
 function Results(props: Props) {
@@ -20,7 +22,7 @@ function Results(props: Props) {
   return (
     <div className='Results'>
       <JobList results={props.results} selectedJob={job} onItemSelected={fetchJob} />
-      <JobDetail job={job} />
+      <JobDetail job={job} tokens={props.tokens} />
     </div>
   )
 }

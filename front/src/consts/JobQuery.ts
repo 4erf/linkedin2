@@ -11,7 +11,7 @@ export const JobQuery = (query: QueryParams, fields: string[]) => ({
       "should": [
         {
           "query_string": {
-            "default_field": "description",
+            "fields": ["description", "title"],
             "query": query.search
           }
         },
@@ -43,7 +43,7 @@ export const JobQuery = (query: QueryParams, fields: string[]) => ({
       "must_not": [
         {
           "terms": {
-            "description": ["phd", "ph.d"]
+            "company_name": ["epam"]
           }
         },
         {
@@ -58,7 +58,10 @@ export const JobQuery = (query: QueryParams, fields: string[]) => ({
         },
         {
           "terms": {
-            "description": ["fare", "anche", "qualsiasi", "dove", "buono", "essere"]
+            "description": [
+              "fare", "anche", "qualsiasi", "dove", "buono", "essere", "esperienza",
+              "profilo", "conoscenze", "avere", "posizione", "delle", "della"
+            ]
           }
         }
       ]

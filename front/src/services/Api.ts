@@ -4,6 +4,8 @@ import { ApiManyResponse, ApiSingleResponse } from '../types/ApiResponse';
 import { JobQuery } from '../consts/JobQuery';
 import { JobItem } from '../types/JobItem';
 import { StateItem } from '../types/StateItem';
+import { Token } from '../types/Token';
+import { AnalyzerResponse } from '../types/AnalyzerResponse';
 
 export class Api {
   private static readonly base = `http://localhost:9200`;
@@ -91,5 +93,15 @@ export class Api {
       headers: this.headers,
       body: JSON.stringify({ doc: { applied } })
     })
+  }
+
+  public static async fetchTokens(text: string): Promise<Token[]> {
+    const res = await fetch(`${this.base}/_analyze`, {
+      method: 'POST',
+      headers: this.headers,
+      body: JSON.stringify({ analyzer: 'standard', text })
+    })
+    const data: AnalyzerResponse = await res.json();
+    return data.tokens;
   }
 }
