@@ -11,7 +11,7 @@
 
 LinkedIn<sup>2</sup> is a utility to rank jobs according to desired keywords or features, for example:
 
-``(python OR pytorch OR "deep learning") AND NOT (c# OR c++)``
+``(javascript^2 OR data scien*) AND NOT ("java" OR "fluent german"~2 OR manage* OR ([5 TO *] years))``
 
 Also keep track of already seen jobs, already applied ones and (really) new posted jobs.
 

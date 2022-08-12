@@ -25,7 +25,7 @@ def create_index(url: str, name: str):
                     "type": "keyword"
                 },
                 "company_name": {
-                    "type": "keyword"
+                    "type": "text"
                 },
                 "company_staff_count": {
                     "type": "long"

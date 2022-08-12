@@ -43,7 +43,7 @@ export const JobQuery = (query: QueryParams, fields: string[]) => ({
       "must_not": [
         {
           "terms": {
-            "company_name": ["epam"]
+            "company_name": []
           }
         },
         {
@@ -53,14 +53,14 @@ export const JobQuery = (query: QueryParams, fields: string[]) => ({
         },
         {
           "terms": {
-            "description": ["pour", "avoir", "dans", "faire", "volonté", "aussi"]
+            "description": ["pour", "avoir", "dans", "faire", "volonté", "aussi", "tâches"]
           }
         },
         {
           "terms": {
             "description": [
               "fare", "anche", "qualsiasi", "dove", "buono", "essere", "esperienza",
-              "profilo", "conoscenze", "avere", "posizione", "delle", "della"
+              "profilo", "conoscenze", "avere", "posizione", "delle", "della", "interessati",
             ]
           }
         }
