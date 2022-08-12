@@ -37,10 +37,10 @@ And not only that, it also allows taking features like company's employee count 
 | Posted n days ago | 15 | 2 |
 
 ## Installation
-### Job list
+### LinkedIn API
 First, install my own fork of the <a href="https://github.com/tomquirk/linkedin-api" target="_blank">linkedin-api</a> package
 ```bash
-pip3 install git+https://github.com/4erf/linkedin-api.git
+pip install git+https://github.com/4erf/linkedin-api.git
 ```
 It tries to circumvent the 1000 job limit of LinkedIn's voyager api.
 
@@ -55,26 +55,28 @@ Now you can modify the `include` and `exclude` arrays in `get_jobs.py`, together
 
 This allows you to run a pre-filtering using LinkedIn built-in search, to facilitate the fetch process excluding definitely irrelevant jobs.
 
-Then run:
-```bash
-python get_jobs.py > jobs.json
-```
-This will first try to get the highest % of jobs possible, circumventing LinkedIn limitations, when you reach a reasonable %, press `Ctrl+C` and now wait for the job details to be fetched.
-
-After finished, it will give you a json file with the relevant jobs. This now needs to be converted to an ndjson for Kibana, you can use `json_to_ndjson.sh` for this.
-
 ### Elasticsearch
-On the root folder, run
+Now, on the root folder, run
 ```bash
 docker compose up
 ```
-to run both elasticsearch and Kibana nodes. You can then log into Kibana by going to `localhost:5601` and activating manually using elasticsearch's address `http://es01:9200`.
+to run both elasticsearch and Kibana nodes. 
 
-Inside the Kibana panel, you can now import a file and select the `jobs.json` converted to an ndjson. 
+You can then log into Kibana by going to `localhost:5601` and activating manually using elasticsearch's address `http://es01:9200`. This is just in case you want to have Kibana access, not needed to use the app.
 
-Import it into the `jobs` index using the `ingest_pipeline.json` pipeline. And, create an empty index named `state` using the `state_mappings.json` mappings.
+### Fetching jobs
+Now to fetch all jobs matching the query, run:
+```bash
+python get_jobs.py
+```
+This will first try to get the highest % of jobs possible, circumventing LinkedIn limitations, when you reach a reasonable %, press `Ctrl+C` and now wait for the job details to be fetched.
+
+After finished, it will give create three json files, `jobs_src` which contains just the initial list of jobs, `jobs` which contains jobs with all the additional information added to them, and `jobs_nd` which is used to insert the data into elasticsearch.
+
+These files are just in case you want them for other purposes, the jobs will be on elasticsearch already, ready to use.
+
 ### Front-end
-To start the front-end run
+Now, to visualize jobs and interact with the system in general, run
 ```bash
 yarn install
 ```

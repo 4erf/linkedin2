@@ -3,6 +3,7 @@ import sys
 import os
 import time
 import threading
+import requests
 from concurrent.futures import ThreadPoolExecutor
 
 dir_ = os.path.abspath(os.path.dirname(__file__))
@@ -10,9 +11,16 @@ dir_ = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(dir_ + '/api')  # TODO: remove
 from linkedin_api import Linkedin
 from parse_description import parse_description
+from create_index import create_index
 
 pool_size = 20
 max_tries = 10
+thread_api_mapping = {}
+index_name = "jobs"
+base_url = 'http://localhost:9200'
+insert_headers = {
+    "Content-Type": "application/x-ndjson",
+}
 
 with open(dir_ + '/.secrets.json') as file:
     apis = [
@@ -20,24 +28,24 @@ with open(dir_ + '/.secrets.json') as file:
         for secret in json.load(file)
     ]
 
-thread_api_mapping = {}
 
 include = [
-    'Data Engineer', 'Machine Learning', 'Data Scientist', 'AI', 'ML',
-    'Software Engineer', 'Software Developer', 'JavaScript Developer', 'Deep Learning',
+    'data engineer', 'machine learning', 'data scientist', 'data science', 'ai', 'ml',
+    'software engineer', 'software developer', 'javascript', 'deep learning',
+    'angular', 'react', 'python',
 ]
 
-exclude = ['Ph.D', 'PhD', 'Intern', 'Data Analyst']
+exclude = ['intern', 'internship']
 
 search = f'''("{'" OR "'.join(include)}") AND NOT ("{'" OR "'.join(exclude)}")'''
 print(search, file=sys.stderr)
 
-jobs = apis[1].get_all_jobs(
-        search, job_type='F', location_name='Switzerland', workplaceType=('1', '3'),
-)
-
-with open(dir_ + '/jobs_src.json', 'w') as file:
-    json.dump(jobs, file)
+# jobs = apis[0].get_all_jobs(
+#         search, job_type='F', location_name='Switzerland', workplaceType=('1', '3'),
+# )
+#
+# with open(dir_ + '/jobs_src.json', 'w') as file:
+#     json.dump(jobs, file)
 
 with open(dir_ + '/jobs_src.json') as file:
     jobs = json.load(file)
@@ -101,4 +109,28 @@ def map_job(item):
 
 with ThreadPoolExecutor(max_workers=pool_size * len(apis)) as executor:
     augmented_jobs = executor.map(map_job, enumerate(jobs))
-    print(json.dumps([job for job in augmented_jobs if job is not None]))
+    augmented_jobs = [job for job in augmented_jobs if job is not None]
+
+with open(dir_ + '/jobs.json', 'w') as file:
+    json.dump(augmented_jobs, file)
+
+with open(dir_ + '/jobs.json') as file:
+    augmented_jobs = json.load(file)
+
+insert_commands = [{'create': {'_index': index_name, '_id': job['id']}} for job in augmented_jobs]
+insert_jobs = [val for pair in zip(insert_commands, augmented_jobs) for val in pair]
+
+with open(dir_ + '/jobs_nd.json', 'w') as file:
+    for line in insert_jobs:
+        json.dump(line, file)
+        file.write('\n')
+
+with open(dir_ + '/jobs_nd.json') as file:
+    create_index(base_url, index_name)
+    res = requests.post(base_url + '/_bulk', data=file, headers=insert_headers)
+    res = json.loads(res.content)['items']
+    successes = sum(int('result' in item['create']) for item in res)
+    failures = len(res) - successes
+    print(f'{successes} Newly created; {failures} Existing.', file=sys.stderr)
+
+

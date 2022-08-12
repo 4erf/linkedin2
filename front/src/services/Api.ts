@@ -10,6 +10,7 @@ import { AnalyzerResponse } from '../types/AnalyzerResponse';
 export class Api {
   private static readonly base = `http://localhost:9200`;
   private static readonly headers = { 'Accept': 'application/json', 'Content-Type': 'application/json' };
+  private static readonly index = 'jobs';
   private static states: { [id: string]: StateItem };
 
   public static async fetchFilteredResults(query: QueryParamsFull): Promise<ResultItem[]> {
@@ -48,7 +49,7 @@ export class Api {
       'id', 'location', 'listed_at', 'title', 'company_name',
       'company_logo', 'company_staff_count', 'remote_allowed'
     ]
-    const res = await fetch(`${this.base}/jobs/_search`, {
+    const res = await fetch(`${this.base}/${this.index}/_search`, {
       method: 'POST',
       headers: this.headers,
       body: JSON.stringify(JobQuery(query, fields))
@@ -58,7 +59,7 @@ export class Api {
   }
 
   public static async fetchJob(id: string): Promise<JobItem> {
-    const res = await fetch(`${this.base}/jobs/_doc/${id}`, { method: 'GET', headers: this.headers })
+    const res = await fetch(`${this.base}/${this.index}/_doc/${id}`, { method: 'GET', headers: this.headers })
     const data: ApiSingleResponse<JobItem> = await res.json();
     const state = await this.fetchState(id);
     return {
