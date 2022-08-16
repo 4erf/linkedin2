@@ -1,6 +1,7 @@
 export interface QueryParamsFull extends QueryParams {
   showSeen: boolean;
   showApplied: boolean;
+  showLatest: boolean;
 }
 
 export interface QueryParams {

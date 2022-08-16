@@ -12,6 +12,7 @@ sys.path.append(dir_ + '/api')  # TODO: remove
 from linkedin_api import Linkedin
 from parse_description import parse_description
 from create_index import create_index
+from get_max_timestamp import get_max_timestamp
 
 pool_size = 20
 max_tries = 10
@@ -21,6 +22,8 @@ base_url = 'http://localhost:9200'
 insert_headers = {
     "Content-Type": "application/x-ndjson",
 }
+epoch_time = int(time.time() * 1000)
+max_timestamp = get_max_timestamp(base_url, index_name)
 
 with open(dir_ + '/.secrets.json') as file:
     apis = [
@@ -40,12 +43,13 @@ exclude = ['intern', 'internship']
 search = f'''("{'" OR "'.join(include)}") AND NOT ("{'" OR "'.join(exclude)}")'''
 print(search, file=sys.stderr)
 
-# jobs = apis[0].get_all_jobs(
-#         search, job_type='F', location_name='Switzerland', workplaceType=('1', '3'),
-# )
-#
-# with open(dir_ + '/jobs_src.json', 'w') as file:
-#     json.dump(jobs, file)
+jobs = apis[0].get_all_jobs(
+    search, job_type='F', location_name='Switzerland', workplaceType=('1', '3'),
+    listed_at=None if not max_timestamp else (epoch_time - max_timestamp) // 1000
+)
+
+with open(dir_ + '/jobs_src.json', 'w') as file:
+    json.dump(jobs, file)
 
 with open(dir_ + '/jobs_src.json') as file:
     jobs = json.load(file)
@@ -90,6 +94,7 @@ def map_job(item):
     apply_link = apply_link_obj.get('companyApplyUrl') or apply_link_obj.get('easyApplyUrl')
 
     return {
+        '@timestamp': epoch_time,
         'id': job_id,
         'location': job['formattedLocation'],
         'listed_at': job['listedAt'],

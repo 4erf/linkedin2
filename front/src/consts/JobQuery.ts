@@ -1,12 +1,17 @@
 import { QueryParams } from '../types/QueryParams';
 
-export const JobQuery = (query: QueryParams, fields: string[]) => ({
+export const JobQuery = (query: QueryParams, fields: string[], latest?: string) => ({
   ...(fields?.length ? { "_source": fields } : {}),
   "size": 10000,
   "query": {
     "bool": {
       "must": [
-        { "match_all": {} }
+        { "match_all": {} },
+        ...(latest ? [{
+          "match": {
+            "@timestamp":  latest
+          }
+        }] : [])
       ],
       "should": [
         {

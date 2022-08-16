@@ -6,6 +6,10 @@ def create_index(url: str, name: str):
     query = {
         'mappings': {
             "properties": {
+                "@timestamp": {
+                    "type": "date",
+                    "format": "epoch_millis"
+                },
                 "apply_link": {
                     "type": "keyword"
                 },
@@ -52,7 +56,6 @@ def create_index(url: str, name: str):
             }
         }
     }
-    res = requests.put(url + f'/{name}', data=json.dumps(query), headers={
+    requests.put(url + f'/{name}', data=json.dumps(query), headers={
         "Content-Type": "application/x-ndjson",
     })
-    res

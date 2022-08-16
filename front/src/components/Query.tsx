@@ -24,9 +24,10 @@ function Query (props: Props) {
   const [daysWeight, setDaysWeight] = useState<number>(query?.daysWeight || 1);
   const [showSeen, setShowSeen] = useState<boolean>(query?.showSeen || false);
   const [showApplied, setShowApplied] = useState<boolean>(query?.showApplied || false);
+  const [showLatest, setShowLatest] = useState<boolean>(query?.showLatest || false);
 
   function submit() {
-    const query = { search, staffValue, staffWeight, daysValue, daysWeight, showSeen, showApplied };
+    const query = { search, staffValue, staffWeight, daysValue, daysWeight, showSeen, showApplied, showLatest };
     props.onQueryChange(query)
     localStorage.setItem(lsKey, JSON.stringify(query))
   }
@@ -121,6 +122,17 @@ function Query (props: Props) {
                   onChange={event => setShowApplied(event.target.checked)}
                 />}
                 label="Applied"
+              />
+            </FormGroup>
+          </Grid>
+          <Grid item xs={1}>
+            <FormGroup>
+              <FormControlLabel
+                control={<Checkbox
+                  checked={showLatest}
+                  onChange={event => setShowLatest(event.target.checked)}
+                />}
+                label="Latest"
               />
             </FormGroup>
           </Grid>

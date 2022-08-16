@@ -6,6 +6,7 @@ import { JobItem } from '../types/JobItem';
 import { StateItem } from '../types/StateItem';
 import { Token } from '../types/Token';
 import { AnalyzerResponse } from '../types/AnalyzerResponse';
+import { LatestResponse } from '../types/LatestResponse';
 
 export class Api {
   private static readonly base = `http://localhost:9200`;
@@ -14,8 +15,8 @@ export class Api {
   private static states: { [id: string]: StateItem };
 
   public static async fetchFilteredResults(query: QueryParamsFull): Promise<ResultItem[]> {
-    const { showSeen, showApplied, ...apiQuery } = query;
-    const apiResults = await this.fetchResults(apiQuery);
+    const { showSeen, showApplied, showLatest, ...apiQuery } = query;
+    const apiResults = await this.fetchResults(apiQuery, showLatest);
     this.states = await this.fetchStates();
 
     const results = apiResults.map(result => ({
@@ -44,7 +45,9 @@ export class Api {
     return data._source || null;
   }
 
-  public static async fetchResults(query: QueryParams): Promise<ResultItemApi[]> {
+  public static async fetchResults(query: QueryParams, latest: boolean): Promise<ResultItemApi[]> {
+    let latestTimestamp;
+    if (latest) { latestTimestamp = await this.fetchLatest() }
     const fields: Array<keyof ResultItemApi> = [
       'id', 'location', 'listed_at', 'title', 'company_name',
       'company_logo', 'company_staff_count', 'remote_allowed'
@@ -52,7 +55,7 @@ export class Api {
     const res = await fetch(`${this.base}/${this.index}/_search`, {
       method: 'POST',
       headers: this.headers,
-      body: JSON.stringify(JobQuery(query, fields))
+      body: JSON.stringify(JobQuery(query, fields, latestTimestamp))
     })
     const data: ApiManyResponse<ResultItemApi> = await res.json();
     return data.hits.hits.map(hit => hit._source);
@@ -104,5 +107,16 @@ export class Api {
     })
     const data: AnalyzerResponse = await res.json();
     return data.tokens;
+  }
+
+  public static async fetchLatest(): Promise<string> {
+    const agg_name = 'max_timestamp';
+    const res = await fetch(`${this.base}/${this.index}/_search`, {
+      method: 'POST',
+      headers: this.headers,
+      body: JSON.stringify({ size: 0, aggs: { [agg_name]: { max: { field: '@timestamp' } } } })
+    })
+    const data: LatestResponse = await res.json();
+    return data.aggregations[agg_name].value_as_string;
   }
 }
