@@ -7,6 +7,7 @@ type_map = {
     'list': ('<ul>', '</ul>'),
     'olist': ('<ol>', '</ol>'),
     'paragraph': ('<p>', '</p>'),
+    'superscript': ('<sup>', '</sup>'),
     'hyperlink': (lambda x: f'<a href="{x}">', '</a>'),
 }
 
