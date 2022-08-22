@@ -17,17 +17,21 @@ interface Props {
 function Query (props: Props) {
   const query: QueryParamsFull | null = JSON.parse(localStorage.getItem(lsKey) || 'null')
 
-  const [search, setSearch] = useState<string>(query?.search || '');
-  const [staffValue, setStaffValue] = useState<number>(query?.staffValue || 0);
-  const [staffWeight, setStaffWeight] = useState<number>(query?.staffWeight || 1);
-  const [daysValue, setDaysValue] = useState<number>(query?.daysValue || 0);
-  const [daysWeight, setDaysWeight] = useState<number>(query?.daysWeight || 1);
-  const [showSeen, setShowSeen] = useState<boolean>(query?.showSeen || false);
-  const [showApplied, setShowApplied] = useState<boolean>(query?.showApplied || false);
-  const [showLatest, setShowLatest] = useState<boolean>(query?.showLatest || false);
+  const [search, setSearch] = useState<string>(query?.search ?? '');
+  const [staffValue, setStaffValue] = useState<number>(query?.staffValue ?? 0);
+  const [staffWeight, setStaffWeight] = useState<number>(query?.staffWeight ?? 0);
+  const [daysValue, setDaysValue] = useState<number>(query?.daysValue ?? 0);
+  const [daysWeight, setDaysWeight] = useState<number>(query?.daysWeight ?? 0);
+  const [predWeight, setPredWeight] = useState<number>(query?.predWeight ?? 0);
+  const [showSeen, setShowSeen] = useState<boolean>(query?.showSeen ?? false);
+  const [showApplied, setShowApplied] = useState<boolean>(query?.showApplied ?? false);
+  const [showLatest, setShowLatest] = useState<boolean>(query?.showLatest ?? false);
 
   function submit() {
-    const query = { search, staffValue, staffWeight, daysValue, daysWeight, showSeen, showApplied, showLatest };
+    const query = {
+      search, staffValue, staffWeight, daysValue, daysWeight,
+      predWeight, showSeen, showApplied, showLatest
+    };
     props.onQueryChange(query)
     localStorage.setItem(lsKey, JSON.stringify(query))
   }
@@ -77,7 +81,7 @@ function Query (props: Props) {
               onChange={event => setStaffWeight(+event.target.value)}
             />
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={1}>
             <TextField
               label="Days"
               type="number"
@@ -101,6 +105,19 @@ function Query (props: Props) {
               }}
               value={daysWeight}
               onChange={event => setDaysWeight(+event.target.value)}
+            />
+          </Grid>
+          <Grid item xs={1}>
+            <TextField
+              label="Pred. Weight"
+              type="number"
+              size="small"
+              fullWidth
+              InputProps={{
+                inputProps: { min: 0 }
+              }}
+              value={predWeight}
+              onChange={event => setPredWeight(+event.target.value)}
             />
           </Grid>
           <Grid item xs={1}>

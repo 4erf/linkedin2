@@ -24,6 +24,7 @@ insert_headers = {
 }
 epoch_time = int(time.time() * 1000)
 max_timestamp = get_max_timestamp(base_url, index_name)
+max_timestamp = 0
 
 with open(dir_ + '/.secrets.json') as file:
     apis = [
@@ -35,7 +36,7 @@ with open(dir_ + '/.secrets.json') as file:
 include = [
     'data engineer', 'machine learning', 'data scientist', 'data science', 'ai', 'ml',
     'software engineer', 'software developer', 'javascript', 'deep learning',
-    'angular', 'react', 'python',
+    'angular', 'react', 'python', 'frontend', 'backend', 'front-end', 'back-end'
 ]
 
 exclude = ['intern', 'internship']
@@ -109,6 +110,7 @@ def map_job(item):
         'company_hq_country': company.get('headquarter', {}).get('country'),
         'company_hq_city': company.get('headquarter', {}).get('city'),
         'company_logo': company_logo,
+        'prediction': False,
     }
 
 

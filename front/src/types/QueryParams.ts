@@ -10,4 +10,5 @@ export interface QueryParams {
   staffWeight: number;
   daysValue: number;
   daysWeight: number;
+  predWeight: number;
 }

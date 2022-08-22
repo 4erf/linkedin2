@@ -21,27 +21,27 @@ export const JobQuery = (query: QueryParams, fields: string[], latest?: string) 
           }
         },
         {
-          "function_score": {
-            "query": {
-              "range": {
-                "company_staff_count": {
-                  "gte": query.staffValue
-                }
-              }
-            },
-            "boost": query.staffWeight
+          "range": {
+            "company_staff_count": {
+              "gte": query.staffValue,
+              "boost": query.staffWeight
+            }
           }
         },
         {
-          "function_score": {
-            "query": {
-              "range": {
-                "listed_at": {
-                  "gte": `now-${query.daysValue}d`
-                }
-              }
-            },
-            "boost": query.daysWeight
+          "range": {
+            "listed_at": {
+              "gte": `now-${query.daysValue}d`,
+              "boost": query.daysWeight
+            }
+          }
+        },
+        {
+          "match": {
+            "prediction": {
+              "query": true,
+              "boost": query.predWeight
+            }
           }
         }
       ],

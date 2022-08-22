@@ -52,10 +52,13 @@ def create_index(url: str, name: str):
                 },
                 "title": {
                     "type": "text"
+                },
+                "prediction": {
+                    "type": "boolean"
                 }
             }
         }
     }
     requests.put(url + f'/{name}', data=json.dumps(query), headers={
-        "Content-Type": "application/x-ndjson",
+        "Content-Type": "application/json",
     })

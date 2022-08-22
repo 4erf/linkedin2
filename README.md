@@ -87,5 +87,5 @@ yarn start
 This will fire up the web app, and you should be able to see your list of jobs, apply filters, mark as seen, applied, etc.
 
 ## To-do
+- [x] Automatically fetch new jobs, right now the process has to be repeated, though it's possible to only fetch jobs posted after certain date, reducing the amount of API calls needed.
 - [ ] Simplify installation process, automate as much as possible, maybe containerize everything
-- [ ] Automatically fetch new jobs, right now the process has to be repeated, though it's possible to only fetch jobs posted after certain date, reducing the amount of API calls needed.
